@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name Unipad)(type KiCad)(uri ${KIPRJMOD}/../libs/Unipad.pretty)(options "")(descr "Unipad shared KiCad footprints"))
+)

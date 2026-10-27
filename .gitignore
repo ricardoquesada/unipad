@@ -1,0 +1,37 @@
+# macOS / OS
+.DS_Store
+Thumbs.db
+
+# IDE / Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# KiCad 10 temporary & backup files
+*-backups/
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_prl-bak
+fp-info-cache
+~*.lck
+*.lck
+*.dsn
+*.ses
+*-save.pro
+*-save.kicad_pcb
+_autosave-*
+
+# Firmware / CMake / Pico-SDK build outputs
+build/
+cmake-build-*/
+firmware/**/build/
+*.uf2
+*.elf
+*.bin
+*.hex
+*.dis
+*.map
+*.o
+*.a
+*.d
