@@ -35,3 +35,9 @@ firmware/**/build/
 *.o
 *.a
 *.d
+
+# Python / Parametric CAD
+__pycache__/
+*.py[cod]
+.venv/
+
