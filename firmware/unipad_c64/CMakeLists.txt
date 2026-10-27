@@ -89,6 +89,7 @@ include_directories(${BTSTACK_ROOT}/3rd-party/bluedroid/decoder/include)
 include_directories(${BTSTACK_ROOT}/src)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    unipad_common
     pico_stdlib
     hardware_pio
     hardware_clocks
@@ -100,6 +101,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     bluepad32
 )
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../common unipad_common)
 add_subdirectory(${BLUEPAD32_ROOT}/src/components/bluepad32 libbluepad32)
 
 # Enable both Micro-USB CDC serial console and J4 debug header UART0 (GP0/GP1, 115200 8N1).

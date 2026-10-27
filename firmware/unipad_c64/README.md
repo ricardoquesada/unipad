@@ -39,7 +39,7 @@ All pin assignments match [`hardware/unipad_c64/pico2w.kicad_sch`](../../hardwar
 | `GP18..GP20` | `LED_BT`, `J1`, `J2` | Output (3 contiguous) | **Active-HIGH** LEDs (`D4` Blue BT, `D5` Green Port 1, `D6` Red Port 2) |
 | `GP21`, `GP22` | `SWITCH_MODE`, `SWAP` | Input | **Active-LOW** pushbuttons (`SW1` Mode / Hold-at-boot reset keys, `SW2` Swap) |
 | `GP23..25, 29` | Internal CYW43439 gSPI | Reserved | Used internally on Pico 2 W by `pico_cyw43_arch` (`PIO2 SM0`) |
-| `GP26..GP28` | Unconnected (`ADC0..2`) | **Do Not Connect** | Intentionally unused (RP2350 ADC pads are NOT 5V fail-safe) |
+| `GP26..GP28` | `BOARD_ID0..2` (`JP1..JP3`) | Input (boot strap) | 3.3V-only PCB Board ID straps to `GND` (`OPEN=1`, `GND=0` -> `0b111` = Unipad C64); isolated post-boot (`0 µA`) |
 
 ## Building & USB Serial Console (`115200` / USB CDC)
 

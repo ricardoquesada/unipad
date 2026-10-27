@@ -11,6 +11,7 @@
 * Schematic and 4-layer PCB layout files are in **KiCad 10** format in this folder (`F.Cu`, `In1.Cu` GND, `In2.Cu` Power, `B.Cu`).
 * Shared custom footprints resolve from [`../libs/Unipad.pretty/`](../libs/Unipad.pretty/).
 * Turnkey JLCPCB 4-layer Gerbers, Excellon drill files, BOM, and Pick-and-Place CPL are located in [`gerber_jlcpcb_rev_a/`](gerber_jlcpcb_rev_a/).
+* **Hardware Board ID (`BOARD_ID[2:0] = 0b111`)**: Three zero-BOM open copper solder jumpers **`JP1` (`ID0` / `GP26`)**, **`JP2` (`ID1` / `GP27`)**, and **`JP3` (`ID2` / `GP28`)** are placed on `B.Cu` beneath `U1` Pins 31–34 (excluded from BOM and CPL; left `OPEN` by default for `Unipad C64`).
 
 ## Bill of Materials (BOM)
 

@@ -8,10 +8,14 @@ This directory contains the board-specific **Raspberry Pi Pico 2 W (`RP2350` + `
 firmware/
 ├── external/               # Third-party / upstream git submodules (isolated from 1st-party code)
 │   └── bluepad32/          # Bluepad32 Bluetooth Classic + BLE HID stack (git submodule)
-├── common/                 # Shared RP2350 drivers & utilities across Unipad boards
-│   └── include/
+├── common/                 # Shared RP2350 drivers & hardware contracts across Unipad boards
+│   ├── CMakeLists.txt      # unipad_common static library target
+│   ├── include/
+│   │   └── unipad_board_id.h       # 3-bit BOARD_ID[2:0] = {GP28, GP27, GP26} contract & registry
+│   └── src/
+│       └── unipad_board_id.c       # Boot-time pull-up sampling, majority vote & post-boot pad isolation
 └── unipad_c64/             # Unipad C64 (Rev. A) target — defaults to PICO_BOARD=pico2_w
-    ├── CMakeLists.txt      # Pico SDK 2.x + Bluepad32 + hardware_pio build definition
+    ├── CMakeLists.txt      # Pico SDK 2.x + Bluepad32 + hardware_pio + unipad_common build definition
     ├── pico_sdk_import.cmake
     ├── include/
     │   ├── unipad_c64_pins.h       # Exact RP2350 pinout matching hardware/unipad_c64/pico2w.kicad_sch
@@ -24,12 +28,19 @@ firmware/
     └── src/
         ├── btstack_config.h        # Dual-mode Classic BR/EDR + BLE + Flash TLV configuration
         ├── sdkconfig.h             # Bluepad32 PICO_W + custom platform configuration
-        ├── main.c                  # RP2350 boot sequence & BTstack event loop
+        ├── main.c                  # RP2350 boot sequence, Board ID interlock & BTstack event loop
         ├── unipad_c64_gpio.c
         ├── unipad_c64_pio.c
         ├── unipad_c64_platform.c
         └── unipad_c64_console.c
 ```
+
+## Hardware Board Identification (`unipad_board_id`)
+
+Every Unipad carrier PCB encodes a 3-bit hardware identifier on the three 3.3V-only RP2350 pads **`BOARD_ID[2:0] = {GP28, GP27, GP26}`** (`JP3`, `JP2`, `JP1` copper solder jumpers to `GND`; **`OPEN = 1`**, **`GND = 0`**):
+
+- **Boot-Time Sampling & Zero Static Current**: `unipad_board_id_detect()` enables RP2350 internal pull-ups (`~50..80 kΩ`, avoiding `RP2350-E9` pull-down latching) + Schmitt hysteresis for `~28 µs`, performs a 3-sample majority vote, and immediately disables both pulls and digital input buffers (`IE = 0`) for **`0.0 µA` steady-state current**.
+- **Wrong-Board Fail-Safe Interlock**: Before driving any external GPIO or PIO state machine, each board target verifies `unipad_board_id_matches(...)`. On mismatch (e.g., C64 `.uf2` flashed onto a future Amiga/Atari carrier), all external `GP0..GP28` pins remain locked in Hi-Z, USB CDC reports the detected vs. expected board ID, and the Pico 2 W onboard LED (`WL_GPIO0`) blinks a 3-pulse warning code.
 
 ## Prerequisites
 

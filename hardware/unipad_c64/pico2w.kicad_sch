@@ -2336,6 +2336,184 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Jumper:SolderJumper_2_Open"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom no)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "JP"
+				(at 0 2.032 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SolderJumper_2_Open"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 -7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Solder Jumper, 2-pole, open"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "solder jumper SPST"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "SolderJumper*Open*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SolderJumper_2_Open_0_1"
+				(polyline
+					(pts
+						(xy -0.254 1.016) (xy -0.254 -1.016)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.254 -1.016)
+					(mid -1.2656 0)
+					(end -0.254 1.016)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(arc
+					(start 0.254 1.016)
+					(mid 1.2656 0)
+					(end 0.254 -1.016)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 1.016) (xy 0.254 -1.016)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "SolderJumper_2_Open_1_1"
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 3.81)
+					(name "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(text "RASPBERRY PI PICO 2 W (RP2350 + CYW43439)"
 		(exclude_from_sim no)
@@ -2363,9 +2541,22 @@
 		)
 		(uuid "40000001-0000-4000-8000-000000000002")
 	)
-	(text "NOTE: GP26-GP28 (ADC0-ADC2) are intentionally\nleft unconnected because RP2350 ADC pads have\nan internal reverse diode to IOVDD (3.3V)\n(Pico 2 W Datasheet Section 3.2 Note, p. 13).\nSYNC_1/2 use 5V fail-safe FT pads GP16/GP17."
+	(text "BOARD ID STRAPPING (GP26..GP28)"
 		(exclude_from_sim no)
-		(at 180.34 111.76 0)
+		(at 193.04 109.22 0)
+		(effects
+			(font
+				(size 2.4892 2.4892)
+				(thickness 0.4978)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "40000001-0000-4000-8000-000000000005")
+	)
+	(text "NOTE: BOARD_ID[2:0] = {GP28, GP27, GP26} sampled once at boot via\nRP2350 internal pull-ups (OPEN=1, GND=0), then isolated (0 uA).\nUnipad C64 = 0b111 (JP1-JP3 OPEN). 3.3V-ONLY DOMAIN: GP26-GP28\n(ADC0-ADC2) have an internal reverse diode to IOVDD (3.3V) — strap\nONLY to GND (never 5V DB9; SYNC_1/2 use 5V FT pads GP16/GP17)."
+		(exclude_from_sim no)
+		(at 193.04 160.02 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2447,6 +2638,18 @@
 		(color 0 0 0 0)
 		(uuid "10000001-0000-4000-8000-000000000011")
 	)
+	(junction
+		(at 228.6 124.46)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "10000001-0000-4000-8000-000000000012")
+	)
+	(junction
+		(at 228.6 132.08)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "10000001-0000-4000-8000-000000000013")
+	)
 	(no_connect
 		(at 132.08 72.39)
 		(uuid "20000001-0000-4000-8000-000000000001")
@@ -2455,17 +2658,125 @@
 		(at 132.08 77.47)
 		(uuid "20000001-0000-4000-8000-000000000002")
 	)
-	(no_connect
-		(at 132.08 80.01)
-		(uuid "20000001-0000-4000-8000-000000000003")
+	(wire
+		(pts
+			(xy 132.08 87.63) (xy 134.62 87.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000084")
 	)
-	(no_connect
-		(at 132.08 85.09)
-		(uuid "20000001-0000-4000-8000-000000000004")
+	(wire
+		(pts
+			(xy 132.08 85.09) (xy 134.62 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000085")
 	)
-	(no_connect
-		(at 132.08 87.63)
-		(uuid "20000001-0000-4000-8000-000000000005")
+	(wire
+		(pts
+			(xy 132.08 80.01) (xy 134.62 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000086")
+	)
+	(wire
+		(pts
+			(xy 208.28 116.84) (xy 213.36 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000087")
+	)
+	(wire
+		(pts
+			(xy 223.52 116.84) (xy 228.6 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000088")
+	)
+	(wire
+		(pts
+			(xy 208.28 124.46) (xy 213.36 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000089")
+	)
+	(wire
+		(pts
+			(xy 223.52 124.46) (xy 228.6 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000090")
+	)
+	(wire
+		(pts
+			(xy 208.28 132.08) (xy 213.36 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000091")
+	)
+	(wire
+		(pts
+			(xy 223.52 132.08) (xy 228.6 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000092")
+	)
+	(wire
+		(pts
+			(xy 228.6 116.84) (xy 228.6 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000093")
+	)
+	(wire
+		(pts
+			(xy 228.6 124.46) (xy 228.6 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000094")
+	)
+	(wire
+		(pts
+			(xy 228.6 132.08) (xy 228.6 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30000001-0000-4000-8000-000000000095")
 	)
 	(wire
 		(pts
@@ -3356,6 +3667,66 @@
 			(justify right bottom)
 		)
 		(uuid "50000001-0000-4000-8000-000000000006")
+	)
+	(label "BOARD_ID0"
+		(at 134.62 87.63 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "50000001-0000-4000-8000-000000000007")
+	)
+	(label "BOARD_ID1"
+		(at 134.62 85.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "50000001-0000-4000-8000-000000000008")
+	)
+	(label "BOARD_ID2"
+		(at 134.62 80.01 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "50000001-0000-4000-8000-000000000009")
+	)
+	(label "BOARD_ID0"
+		(at 208.28 116.84 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "50000001-0000-4000-8000-000000000010")
+	)
+	(label "BOARD_ID1"
+		(at 208.28 124.46 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "50000001-0000-4000-8000-000000000011")
+	)
+	(label "BOARD_ID2"
+		(at 208.28 132.08 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "50000001-0000-4000-8000-000000000012")
 	)
 	(global_label "GPIO_UART_TX"
 		(shape output)
@@ -6395,6 +6766,320 @@
 			(project "unipad_c64"
 				(path "/0e6b6c40-efab-4794-bc88-ed2592ffa1bd/4c2fb79c-207e-4f92-8ea1-7543e9ed400d"
 					(reference "#PWR015")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 218.44 116.84 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "70000001-0000-4000-8000-000000000027")
+		(property "Reference" "JP1"
+			(at 218.44 114.808 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ID0"
+			(at 218.44 119.38 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 218.44 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 218.44 124.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "BOARD_ID0 strap (OPEN=1, GND=0)"
+			(at 218.44 121.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "70000001-0000-4000-8000-000000002701")
+		)
+		(pin "2"
+			(uuid "70000001-0000-4000-8000-000000002702")
+		)
+		(instances
+			(project "unipad_c64"
+				(path "/0e6b6c40-efab-4794-bc88-ed2592ffa1bd/4c2fb79c-207e-4f92-8ea1-7543e9ed400d"
+					(reference "JP1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 218.44 124.46 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "70000001-0000-4000-8000-000000000028")
+		(property "Reference" "JP2"
+			(at 218.44 122.428 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ID1"
+			(at 218.44 127 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 218.44 124.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 218.44 132.08 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "BOARD_ID1 strap (OPEN=1, GND=0)"
+			(at 218.44 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "70000001-0000-4000-8000-000000002801")
+		)
+		(pin "2"
+			(uuid "70000001-0000-4000-8000-000000002802")
+		)
+		(instances
+			(project "unipad_c64"
+				(path "/0e6b6c40-efab-4794-bc88-ed2592ffa1bd/4c2fb79c-207e-4f92-8ea1-7543e9ed400d"
+					(reference "JP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 218.44 132.08 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "70000001-0000-4000-8000-000000000029")
+		(property "Reference" "JP3"
+			(at 218.44 130.048 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ID2"
+			(at 218.44 134.62 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 218.44 132.08 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 218.44 139.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "BOARD_ID2 strap (OPEN=1, GND=0)"
+			(at 218.44 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "70000001-0000-4000-8000-000000002901")
+		)
+		(pin "2"
+			(uuid "70000001-0000-4000-8000-000000002902")
+		)
+		(instances
+			(project "unipad_c64"
+				(path "/0e6b6c40-efab-4794-bc88-ed2592ffa1bd/4c2fb79c-207e-4f92-8ea1-7543e9ed400d"
+					(reference "JP3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 228.6 137.16 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "70000001-0000-4000-8000-000000000030")
+		(property "Reference" "#PWR016"
+			(at 228.6 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 228.6 142.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 228.6 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 228.6 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 228.6 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "70000001-0000-4000-8000-000000003001")
+		)
+		(instances
+			(project "unipad_c64"
+				(path "/0e6b6c40-efab-4794-bc88-ed2592ffa1bd/4c2fb79c-207e-4f92-8ea1-7543e9ed400d"
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)

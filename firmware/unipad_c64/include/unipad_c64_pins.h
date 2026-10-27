@@ -9,6 +9,8 @@
 #ifndef UNIPAD_C64_PINS_H
 #define UNIPAD_C64_PINS_H
 
+#include "unipad_board_id.h"
+
 // ---------------------------------------------------------------------------
 // Debug UART0 (routed to 1x8 Debug / Logic Analyzer Header J4)
 // ---------------------------------------------------------------------------
@@ -82,8 +84,16 @@
 #define UNIPAD_PIN_SWITCH_MODE      21u  // GP21 <- SW3 (MODE)
 #define UNIPAD_PIN_SWITCH_SWAP      22u  // GP22 <- SW4 (SWAP)
 
+// ---------------------------------------------------------------------------
+// Hardware Board Identification Bootstrap Pins (`BOARD_ID[2:0]`, 3.3V-Only Domain)
+// Defined in `unipad_board_id.h`:
+//   - UNIPAD_PIN_BOARD_ID0 (GP26 / Pin 31) <- JP1 (OPEN on Unipad C64 -> 1)
+//   - UNIPAD_PIN_BOARD_ID1 (GP27 / Pin 32) <- JP2 (OPEN on Unipad C64 -> 1)
+//   - UNIPAD_PIN_BOARD_ID2 (GP28 / Pin 34) <- JP3 (OPEN on Unipad C64 -> 1)
+// Sampled once at boot via internal pull-ups (`0b111` = `UNIPAD_BOARD_C64`) and
+// immediately isolated (`PUE=0, PDE=0, IE=0`) for `0.0 uA` static draw.
 // Note: GP23, GP24, GP25, and GP29 are reserved internally on Pico 2 W for the
-// Infineon CYW43439 wireless gSPI interface. GP26-GP28 (ADC0-ADC2) are left
-// unconnected by hardware design due to internal IOVDD reverse diodes.
+// Infineon CYW43439 wireless gSPI interface.
+// ---------------------------------------------------------------------------
 
 #endif  // UNIPAD_C64_PINS_H

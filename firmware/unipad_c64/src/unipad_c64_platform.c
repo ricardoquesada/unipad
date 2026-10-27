@@ -16,6 +16,7 @@
 #include "hid_usage.h"
 #include "uni_common.h"
 #include "uni_version.h"
+#include "unipad_board_id.h"
 #include "unipad_c64_console.h"
 #include "unipad_c64_gpio.h"
 #include "unipad_c64_pins.h"
@@ -935,8 +936,13 @@ void unipad_c64_platform_print_status(void) {
     const char* pot_hw_names[] = {"buttons (SIO)", "rumble (PIO sync)", "1351 mouse (PIO)", "paddles (PIO)"};
     const char* tv_names[] = {"auto", "pal", "ntsc"};
 
+    char strap_str[40];
+    unipad_board_id_format_straps(unipad_board_id_get_raw_mask(), strap_str, sizeof(strap_str));
+    const unipad_board_info_t* board_info = unipad_board_id_get_info(unipad_board_id_get());
+
     logi("\n=== Unipad C64 Status ===\n");
     logi("  Hardware       : Unipad C64 (Rev. A) — Raspberry Pi Pico 2 W (RP2350)\n");
+    logi("  Board ID       : %s -> %s (%s)\n", strap_str, board_info->model_name, board_info->target_hosts);
     logi("  Board UID      : %s\n", board_id_hex);
     logi("  Local BT Addr  : %s (scanning=%s)\n", bd_addr_to_str(local_addr),
          uni_bt_is_scanning() ? "on" : "off");
@@ -976,7 +982,10 @@ static void unipad_init(int argc, const char** argv) {
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    logi("unipad_c64: Initializing Unipad C64 platform (RP2350 + PIO SID engine)\n");
+    char strap_str[40];
+    unipad_board_id_format_straps(unipad_board_id_get_raw_mask(), strap_str, sizeof(strap_str));
+    logi("unipad_c64: Initializing %s [BOARD_ID=%s] (RP2350 + PIO SID engine)\n",
+         unipad_board_id_name(unipad_board_id_get()), strap_str);
     unipad_c64_pio_init();
 }
 
