@@ -1,0 +1,143 @@
+; SPDX-License-Identifier: Apache-2.0
+; Copyright (c) 2026 Ricardo Quesada
+;
+; Cycle-exact RP2350 PIO state-machine programs for the Commodore 64 SID (6581/8580)
+; Potentiometer A/D Interface on Unipad C64 (Rev. A):
+;
+;   1. c64_sid_pot:
+;      Zero-jitter, zero-CPU-interrupt Commodore 1351 Proportional Analog Mouse and
+;      Commodore 1311/1312 Paddle waveform generator. Synchronizes directly to the C64 SID's
+;      512-Phi2 discharge falling edge on GP16 (Port 1) or GP17 (Port 2), holds the 74HCT05
+;      open-drain clamp asserted for an exact 1-clk_sys-cycle-resolved window, and releases
+;      to the onboard 10k pull-up so the C64 SID latches $D419 (POTX) / $D41A (POTY) with
+;      zero interrupt latency jitter. Automatically replays the last target value from
+;      scratch register Y on every 1,924 Hz (PAL) / 1,998 Hz (NTSC) SID cycle when idle.
+;
+;   2. c64_sid_sync_measure:
+;      Zero-CPU-interrupt SID 256-Phi2 discharge low-pulse width meter. Used both at boot
+;      to auto-calibrate PAL (985.248 kHz) vs. NTSC (1.022727 MHz) C64 Phi2 clock timing
+;      and in C64 Rumble mode to detect SID POTY activity gated by CIA1 $DC00 bits 6..7.
+
+; =============================================================================
+; Program 1: c64_sid_pot (10 instructions; shared across 4 SMs on 1 PIO block)
+; =============================================================================
+; Pin Configuration per State Machine:
+;   - IN_BASE  (pin 0) : C64 POTY sync input (GP16 for Port 1, GP17 for Port 2)
+;   - SET_BASE (1 pin) : 74HCT05 open-drain control (GP7=J1_POTX, GP8=J1_POTY,
+;                        GP14=J2_POTX, GP15=J2_POTY)
+;
+; Electrical Polarity:
+;   - SET = 1 (GPIO HIGH) -> 74HCT05 ON  -> C64 POT clamped LOW (~0.1V, cap held discharged)
+;   - SET = 0 (GPIO LOW)  -> 74HCT05 OFF -> 10k pull-up charges SID 470pF cap across ~2.4V
+;
+; Register Invariant:
+;   - Scratch Y holds the persistent 32-bit hold-loop cycle count across SID frames.
+;   - Because `pull noblock` copies X -> OSR whenever the TX FIFO is empty, restoring
+;     `mov x, y` prior to `pull noblock` prevents the post-loop X=0xFFFFFFFF underflow
+;     value from corrupting OSR on subsequent zero-CPU replay frames.
+.program c64_sid_pot
+.wrap_target
+    mov x, y            ; 1 cyc: Restore cached delay from Y into X for empty-FIFO fallback
+    pull noblock        ; 1 cyc: If TX FIFO has new value, OSR <- FIFO; else OSR <- X (= Y)
+    mov y, osr          ; 1 cyc: Persist active delay count in shadow register Y
+    mov x, y            ; 1 cyc: Initialize countdown register X with active delay count
+    wait 1 pin 0        ; >=1 cyc: Wait until POTY sync input is HIGH (idle/charged plateau)
+    wait 0 pin 0        ; >=1 cyc: Trigger deterministically on SID Cycle 0 discharge edge
+    set pins, 1         ; 1 cyc: Assert 74HCT05 LOW clamp across SID discharge + delay window
+hold_loop:
+    jmp x-- hold_loop   ; (X + 1) cyc: Cycle-exact hold delay at full clk_sys resolution
+    set pins, 0         ; 1 cyc: Release 74HCT05 -> Hi-Z; 10k pull-up charges SID 470pF cap
+.wrap
+
+; =============================================================================
+; Program 2: c64_sid_sync_measure (8 instructions; shared across 2 SMs)
+; =============================================================================
+; Pin Configuration per State Machine:
+;   - IN_BASE (pin 0) & JMP_PIN : C64 POTY sync input (GP16 for Port 1, GP17 for Port 2)
+;
+; Output (RX FIFO):
+;   - Pushes one 32-bit unsigned word per SID discharge pulse equal to the number of
+;     2-clk_sys-cycle iterations that sync_pin remained LOW (`low_cycles ~= 2 * sample`).
+.program c64_sid_sync_measure
+.wrap_target
+    wait 1 pin 0        ; Wait for POTY sync line to be in steady HIGH state
+    wait 0 pin 0        ; Falling edge: C64 SID begins 256-Phi2 discharge window
+    mov x, !null        ; Load X = 0xFFFFFFFF
+measure_low:
+    jmp pin, pulse_done ; Exit immediately when sync_pin rises back above V_IH
+    jmp x-- measure_low ; Decrement X while pin stays LOW (2 PIO clocks per iteration)
+pulse_done:
+    mov isr, !x         ; Invert X -> exact number of 2-cycle iterations spent LOW
+    push noblock        ; Enqueue measurement into RX FIFO without ever stalling SM
+.wrap
+
+% c-sdk {
+#include "hardware/clocks.h"
+#include "hardware/gpio.h"
+#include "hardware/pio.h"
+
+/**
+ * @brief Configures and initializes a `c64_sid_pot` state machine for one POT line.
+ *
+ * Leaves the state machine disabled after configuration; caller pushes the initial
+ * hold-cycle count into the TX FIFO and enables the state machine when entering
+ * 1351 mouse or 1311/1312 paddle mode.
+ *
+ * @param pio      PIO block instance hosting the `c64_sid_pot` program.
+ * @param sm       State machine index (0..3).
+ * @param offset   Instruction memory offset where `c64_sid_pot_program` is loaded.
+ * @param pot_pin  RP2350 GPIO driving the 74HCT05 POT inverter (GP7, GP8, GP14, or GP15).
+ * @param sync_pin RP2350 GPIO sensing the C64 POTY divider (GP16 for J1, GP17 for J2).
+ */
+static inline void c64_sid_pot_program_init(PIO pio,
+                                            uint sm,
+                                            uint offset,
+                                            uint pot_pin,
+                                            uint sync_pin) {
+    pio_sm_set_enabled(pio, sm, false);
+
+    pio_sm_config c = c64_sid_pot_program_get_default_config(offset);
+    sm_config_set_set_pins(&c, pot_pin, 1);
+    sm_config_set_in_pins(&c, sync_pin);
+    // Run at full clk_sys (150 MHz on RP2350 -> 6.67 ns timing resolution).
+    sm_config_set_clkdiv(&c, 1.0f);
+    // Join both FIFOs? Keep standard 4-deep TX FIFO; CPU only writes latest target.
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_NONE);
+
+    pio_gpio_init(pio, pot_pin);
+    // Start with SET pin = 0 (74HCT05 Hi-Z) before driving output enable.
+    pio_sm_set_pins_with_mask(pio, sm, 0u, 1u << pot_pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, pot_pin, 1, true);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_clear_fifos(pio, sm);
+}
+
+/**
+ * @brief Configures and initializes a `c64_sid_sync_measure` state machine on a SYNC pin.
+ *
+ * Note: Does NOT claim `pio_gpio_init` output mux on `sync_pin` because `sync_pin`
+ * (`GP16`/`GP17`) is a pure input pad shared across SIO and PIO blocks.
+ *
+ * @param pio      PIO block instance hosting `c64_sid_sync_measure_program`.
+ * @param sm       State machine index (0..3).
+ * @param offset   Instruction memory offset where `c64_sid_sync_measure_program` is loaded.
+ * @param sync_pin RP2350 GPIO sensing the C64 POTY divider (GP16 for J1, GP17 for J2).
+ */
+static inline void c64_sid_sync_measure_program_init(PIO pio,
+                                                     uint sm,
+                                                     uint offset,
+                                                     uint sync_pin) {
+    pio_sm_set_enabled(pio, sm, false);
+
+    pio_sm_config c = c64_sid_sync_measure_program_get_default_config(offset);
+    sm_config_set_in_pins(&c, sync_pin);
+    sm_config_set_jmp_pin(&c, sync_pin);
+    sm_config_set_clkdiv(&c, 1.0f);
+    // Join FIFOs into an 8-word RX FIFO since this SM never pulls from TX FIFO.
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_clear_fifos(pio, sm);
+}
+%}
