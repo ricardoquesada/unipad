@@ -62,7 +62,7 @@ cmake -S firmware/unipad_c64 -B firmware/unipad_c64/build
 cmake --build firmware/unipad_c64/build -j8
 ```
 
-> **Note:** `PICO_BOARD` defaults automatically to `pico2_w` (`RP2350` + `CYW43439`). The compiled firmware image is generated at `firmware/unipad_c64/build/unipad_c64.uf2`.
+> **Note:** `PICO_BOARD` defaults automatically to `pico2_w` (`RP2350` + `CYW43439`). The compiled firmware image is generated at `firmware/unipad_c64/build/unipad_c64.uf2`. Pass `-DUNIPAD_WARNINGS_AS_ERRORS=ON` to match the strict `-Werror` check enforced on first-party Unipad sources in GitHub Actions ([`.github/workflows/build-firmware.yml`](../.github/workflows/build-firmware.yml)).
 
 ## Flashing `.uf2` Firmware to Unipad
 

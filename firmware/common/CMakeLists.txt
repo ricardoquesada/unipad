@@ -4,8 +4,12 @@
 # Shared RP2350 hardware drivers and board-identification contracts across all
 # Unipad retro computer adapters.
 
-add_library(unipad_common STATIC
+set(UNIPAD_COMMON_SOURCES
     src/unipad_board_id.c
+)
+
+add_library(unipad_common STATIC
+    ${UNIPAD_COMMON_SOURCES}
 )
 
 target_include_directories(unipad_common PUBLIC
@@ -18,6 +22,12 @@ target_compile_options(unipad_common PRIVATE
     $<$<COMPILE_LANGUAGE:C>:-Werror=implicit-function-declaration>
     -Werror=return-type
 )
+
+if(UNIPAD_WARNINGS_AS_ERRORS)
+    set_source_files_properties(${UNIPAD_COMMON_SOURCES} PROPERTIES
+        COMPILE_OPTIONS "-Werror"
+    )
+endif()
 
 target_link_libraries(unipad_common PUBLIC
     pico_stdlib

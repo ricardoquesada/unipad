@@ -1037,7 +1037,8 @@ static void unipad_on_init_complete(void) {
 }
 
 static uni_error_t unipad_on_device_discovered(bd_addr_t addr, const char* name, uint16_t cod, uint8_t rssi) {
-    ARG_UNUSED(addr);
+    // bd_addr_t is typedef uint8_t[6]; avoid ARG_UNUSED() sizeof() on array parameter (-Wsizeof-array-argument).
+    (void)addr;
     ARG_UNUSED(name);
     ARG_UNUSED(cod);
     ARG_UNUSED(rssi);

@@ -1,5 +1,7 @@
 # Unipad™
 
+[![Build Firmware](https://github.com/ricardoquesada/unipad/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/ricardoquesada/unipad/actions/workflows/build-firmware.yml)
+
 Wireless Bluetooth Gamepad, Paddle & Mouse adapters for vintage 8-bit and 16-bit computers — by the creator of [Unijoysticle](https://github.com/ricardoquesada/unijoysticle2) and [Bluepad32](https://github.com/ricardoquesada/bluepad32).
 
 ## Models

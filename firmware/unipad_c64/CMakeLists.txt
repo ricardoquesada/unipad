@@ -50,12 +50,16 @@ endif()
 
 pico_sdk_init()
 
-add_executable(${PROJECT_NAME}
+set(UNIPAD_C64_SOURCES
     src/main.c
     src/unipad_c64_gpio.c
     src/unipad_c64_pio.c
     src/unipad_c64_platform.c
     src/unipad_c64_console.c
+)
+
+add_executable(${PROJECT_NAME}
+    ${UNIPAD_C64_SOURCES}
     ${BTSTACK_MISSING_SOURCES}
 )
 
@@ -68,13 +72,28 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     UNIPAD_FIRMWARE_VERSION="${UNIPAD_FIRMWARE_VERSION}"
 )
 
-# Enforce strict compiler diagnostics on all first-party Unipad C64 source files.
+option(UNIPAD_WARNINGS_AS_ERRORS
+    "Treat compiler warnings as errors on first-party Unipad source files"
+    OFF
+)
+
+# Enforce strict compiler diagnostics on first-party Unipad C64 source files.
+# Note: Pico SDK libraries (pico_stdlib, pico_btstack_*, pico_cyw43_*) are CMake
+# INTERFACE libraries that attach third-party .c sources directly to ${PROJECT_NAME},
+# so -Werror is applied via set_source_files_properties to keep third-party SDK
+# sources immune to toolchain-version warning drift.
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall
     -Wextra
     $<$<COMPILE_LANGUAGE:C>:-Werror=implicit-function-declaration>
     -Werror=return-type
 )
+
+if(UNIPAD_WARNINGS_AS_ERRORS)
+    set_source_files_properties(${UNIPAD_C64_SOURCES} PROPERTIES
+        COMPILE_OPTIONS "-Werror"
+    )
+endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
